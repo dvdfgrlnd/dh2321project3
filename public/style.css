@@ -1,0 +1,10 @@
+html, body, .parcoords {
+    width:98%;
+    height:98%;
+    background: black;
+}
+svg {
+    width: 98%;
+    background: black;
+    height: 98%;
+}
