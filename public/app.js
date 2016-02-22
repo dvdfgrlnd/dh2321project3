@@ -1,3 +1,4 @@
+/* global globalData */
 /*
     THINGS TO DO
     
@@ -27,7 +28,7 @@ var pi = Math.PI,
     twopi=2*pi;
 var pie = d3.layout.pie().value(function (d) { return 10; }).padAngle(.0002).sort(null);
 var arc = d3.svg.arc()
-    .innerRadius(radius-arcWidth)
+    .innerRadius((d)=>{return radius-20-(d.data['Daily Organic Reach']/10); })
     .outerRadius(radius);
     
 var data=globalData.main;
@@ -36,6 +37,8 @@ var pieData=pie(data);
 console.log(pieData);
 var colors=['black','cyan'];
 var groups=vis
+    .append('g')
+    .attr('id', 'maincircle')
     .selectAll('path')
     .data(pieData)
     .enter()
@@ -48,7 +51,7 @@ var groups=vis
         if(key==='Date' || !params.some((s)=>{ return ~key.indexOf(s); })){
             delete rdata[key];
         }
-        updateRadarChart(rdata);
+        updateRadarChart([rdata]);
 });
     });
 groups.append('path')
@@ -62,31 +65,50 @@ Object.keys(rdata).forEach((key)=>{
         delete rdata[key];
     }
 });
-updateRadarChart(rdata);
+var rdata2=globalData.main[200];
+Object.keys(rdata2).forEach((key)=>{
+    if(key==='Date' || !params.some((s)=>{ return ~key.indexOf(s); })){
+        delete rdata2[key];
+    }
+});
+updateRadarChart([rdata, rdata2]);
    
-   
+var angle=0;
+setInterval(()=>{
+    d3.select('#maincircle').attr('transform', 'rotate('+(angle+=0.1)+', '+radius+', '+radius+')');
+}, 50);   
+
 function getRadarCoordinates(values, maxValue) {
-    var dimensions=Object.keys(values);
-    console.log(values);
-    console.log(dimensions);
-    if(!maxValue)
-        maxValue=d3.max(dimensions, (d)=>{ return isNumber(+values[d])?values[d]:0; });
+    var dimensions=Object.keys(values[0]);      
+    if(!maxValue){
+        values.forEach((value)=>{
+            // console.log(value);
+            // console.log(dimensions);
+            var newValue=d3.max(dimensions, (d)=>{ return isNumber(+value[d])?+value[d]:0; });
+            if(maxValue===undefined || newValue>maxValue)
+                maxValue=newValue;
+        });
+    }
         
-        
-    var index = 0;
-    var currentAngle = 0,
-        angleDelta = ((2 * Math.PI) / dimensions.length);
-    var coordinates=[];
-    dimensions.forEach(function(d) {
-        var c=values[d]/maxValue;
-        if(c!==undefined){
-            coordinates[index++] = { x: (Math.cos(currentAngle) * c), y: (Math.sin(currentAngle) * c), name: d };
-            currentAngle += angleDelta;
-        }
+        console.log(maxValue);
+    var total=[];
+    values.forEach((value)=>{    
+        var index = 0;
+        var currentAngle = 0,
+            angleDelta = ((2 * Math.PI) / dimensions.length);
+        var coordinates=[];
+        dimensions.forEach(function(d) {
+            var c=value[d]/maxValue;
+            if(c!==undefined){
+                coordinates[index++] = { x: (Math.cos(currentAngle) * c), y: (Math.sin(currentAngle) * c), name: d };
+                currentAngle += angleDelta;
+            }
+        });
+        coordinates[index] = coordinates[0];
+        // console.log(coordinates);
+        total.push(coordinates);
     });
-    coordinates[index] = coordinates[0];
-    console.log(coordinates);
-    return coordinates;
+    return total;
 }
  
  function isNumber(n) {
@@ -95,13 +117,21 @@ function getRadarCoordinates(values, maxValue) {
 
 function updateRadarChart(data){
     var coordinates=getRadarCoordinates(data);
-    d3.select('#detailchart')
-            .datum(coordinates)
-            .transition()
-            .attr("d", line)
-            .duration(1000)
-            .ease("linear")
-            .attr("transform", null);
+    console.log(coordinates);
+    var paths=d3.select('#detailchart')
+        .selectAll('path')
+        .data(coordinates);
+    paths.enter()
+        .append("path")
+        .style("stroke-width", 1)
+        .style("stroke", "white")
+        .style("fill", "rgba(0, 240, 240, 0.5)");
+    paths.exit().remove();
+    paths.transition()
+    .attr("d", line)
+    .duration(1000)
+    .ease("linear")
+    .attr("transform", null);
 }
 
 function createRadarChart(offset) {
@@ -143,9 +173,5 @@ function createRadarChart(offset) {
          .attr("stroke-width", 3);
     // Draw the lines for the radar surface
     chart.append("g")
-         .append("path")
-         .attr("id", 'detailchart')
-         .style("stroke-width", 1)
-         .style("stroke", "white")
-         .style("fill", "rgba(0, 240, 240, 0.5)");
+         .attr("id", 'detailchart');
 }
