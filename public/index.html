@@ -6,11 +6,43 @@
         <script src="globals.js"></script>
     </head>
     <body>
-        <div id="example" class="parcoords"></div>
-        
+        <div id="description">
+            This is a visualization of Facebook analytics data. It spins indefinitely, and shows data spanning 2 years. The arcs represents days, and the length is determined by the organic reach that day. The blue shape represents the current day, and the red shape is the change from the day before. The bigger the change, the bigger the shape. Details can be viewed by hovering over a specific day, or by clicking a specific day. When clicking a day (arc), the red shape is now the selected days values. Other days is represented by the blue shape, and can be shown by hovering.  
+        </div>
+        <div id="creator">
+            <a href="creator.html">Creator and Design Brief</a>
+        </div>
+        <div>
+            <div id="sidebar" >
+                <form>
+                    <label>video posts</label>
+                    <input type="checkbox" onclick="handleFilter(this)" id="videoInput" class="check"/>
+                    <label>photo posts</label>
+                    <input type="checkbox" onclick="handleFilter(this)" id="photoInput" class="check"/>
+                    <label>link posts</label>
+                    <input type="checkbox" onclick="handleFilter(this)" id="linkInput" class="check"/>
+                    <label>status posts</label>
+                    <input type="checkbox" onclick="handleFilter(this)" id="statusInput" class="check"/>
+                    <button type="button" onclick="clearSelection(this)">Clear red marker</button>
+                
+                </form>
+            </div>
+            <div id="example" class="parcoords"></div>
+            <div class="tooltip"></div>
+        </div>
         <script src="http://d3js.org/d3.v3.min.js"></script>
         <script src="d3.parcoords.js"></script>
         <link rel="stylesheet" type="text/css" href="d3.parcoords.css">
         <script src="app.js"></script>
+        <style>
+            @media only screen and (min-width: 800px) {
+                .parcoords{
+                    float: left;
+                }
+                .tooltip{
+                    float: right;
+                }
+            }
+        </style>
     </body>
 </html>

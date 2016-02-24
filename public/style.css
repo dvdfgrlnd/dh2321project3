@@ -1,10 +1,44 @@
-html, body, .parcoords {
+html, body {
     width:98%;
     height:98%;
     background: black;
+}
+.parcoords{
+    width:60%;
+    height:95%;
 }
 svg {
     width: 98%;
     background: black;
     height: 98%;
+}
+label{
+    color: white;
+}
+.check{
+    color: white;
+    margin-right: 3%;
+}
+.tooltip{
+    position: relative;
+    z-index: 10000;
+    color : white;
+    overflow-y: scroll;
+    height: 90%;
+}
+#description{
+    color: white;
+    margin-bottom: 5%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: lighter;
+    font-size: 20px;
+}
+#creator{
+    margin-bottom: 5%;
+}
+a{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: lighter;
+    font-size: 30px;
+    color: white;
 }
