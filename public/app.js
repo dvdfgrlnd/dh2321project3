@@ -131,7 +131,7 @@ vis.append('text')
     .attr('font-size', 25)
     .attr('id', 'yeartext')
     .style('fill', 'orange')
-    .attr('x', (radius*2))
+    .attr('x', (radius*2)-40)
     .attr('y', (radius*2));
     
 var rdata=globalData.main[100];
